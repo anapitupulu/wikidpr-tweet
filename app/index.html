@@ -57,13 +57,19 @@
     </div>
 
     <div class="container" ng-controller="homeController">
+       <div class="row">
+         <div class="col-xs-12">
+           <button ng-click="connectButton()" ng-hide="userLoggedIn" class="btn btn-primary">Connect Twitter</button>
+           <button ng-click="signOut()" ng-show="userLoggedIn" class="btn btn-primary">Sign Out</button>
+         </div>
+       </div>
 
-        <p>
+        <div class="row col-xs-12">
             <div>Pilih Komisi:</div>
             <select ng-model="selectedKomisi" placeholder="Pilih Komisi">
                 <option ng-repeat="kom in komisi" value="{{kom}}">{{kom}}</option>
             </select>
-        </p>
+        </div>
 
         <script type="text/ng-template" id="anggota-template.html">
             <a>
@@ -82,22 +88,20 @@
             </a>
         </script>
 
-        <p>
+        <div class="row col-xs-12">
             <input type="text" ng-model="anggotaSelected" placeholder="Pilih anggota" typeahead="member as member.name for member in anggota | filter:{name:$viewValue}"
             typeahead-template-url="anggota-template.html" class="form-control"
             width="8">
-        </p>
-        <p>
+        </div>
+        <div class="row col-xs-12">
             <textarea style="height: 100px" class="form-control" ng-model="tweetText">{{tweetText}}</textarea>
-        </p>
+        </div>
 
-        <p>
+        <div class="row col-xs-12">
             <button class="btn btn-default pull-right" type="submit" ng-model="tweetText">Tweet!</button>
-        </p>
+        </div>
 
     </div>
-
-    <!-- <div>Angular seed app: v<span app&#45;version></span></div> -->
 
     <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
@@ -107,15 +111,10 @@
     <script src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
     <script src="bower_components/oauth-js/dist/oauth.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="app.js"></script>
     <script src="services.js"></script>
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="controllers.js"></script>
-    <script src="view1/view1.js"></script>
-    <script src="view2/view2.js"></script>
-    <script src="components/version/version.js"></script>
-    <script src="components/version/version-directive.js"></script>
-    <script src="components/version/interpolate-filter.js"></script>
 </body>
 
 </html>
