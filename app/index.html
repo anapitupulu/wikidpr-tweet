@@ -20,85 +20,70 @@
 </head>
 
 <body>
-    <!-- <ul class="menu"> -->
-    <!--   <li><a href="#/view1">view1</a></li> -->
-    <!--   <li><a href="#/view2">view2</a></li> -->
-    <!-- </ul> -->
-
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
 
-    <!-- <div ng&#45;view></div> -->
-
-    <div class="container" ng-controller="TwitterController">
-        <h1>Twitter OAuth.io Example</h1>
-        <div class="row">
-            <div class="col-xs-12">
-                <button ng-click="connectButton()" id="connectButton" type="button" class="btn btn-primary">Connect Twitter</button>
-                <button ng-click="refreshTimeline()" id="getTimelineButton" type="button" class="btn btn-info"
-                style="display:none;">Get My Timeline</button>
-                <button ng-click="signOut()" id="signOut" type="button" class="btn btn-link" style="display:none;">Sign Out</button>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12" id="results">
-                <div class="row" ng-repeat="t in tweets">
-                    <div class="col-xs-2 col-sm-1">
-                        <img ng-src="{{t.user.profile_image_url}}" class="img-circle">
-                    </div>
-                    <div class="col-xs-10 col-sm-11">
-                        <small>{{t.user.name}}</small>
-                        <br>{{t.text}}
+    <div class="container" ng-controller="WikiDprTweetController">
+        <div class="row col-xs-12">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">
+                              WikiDPR - Tweet
+                            </a>
+                        <button ng-click="connectButton()" ng-hide="attr.userLoggedIn" class="btn btn-primary navbar-btn">Connect Twitter</button>
+                        <button ng-click="signOut()" ng-show="attr.userLoggedIn" class="btn btn-primary navbar-btn">Sign Out</button>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container" ng-controller="homeController">
-       <div class="row">
-         <div class="col-xs-12">
-           <button ng-click="connectButton()" ng-hide="userLoggedIn" class="btn btn-primary">Connect Twitter</button>
-           <button ng-click="signOut()" ng-show="userLoggedIn" class="btn btn-primary">Sign Out</button>
-         </div>
-       </div>
-
-        <div class="row col-xs-12">
-            <div>Pilih Komisi:</div>
-            <select ng-model="selectedKomisi" placeholder="Pilih Komisi">
-                <option ng-repeat="kom in komisi" value="{{kom}}">{{kom}}</option>
-            </select>
+            </nav>
         </div>
 
         <script type="text/ng-template" id="anggota-template.html">
             <a>
                 <div class="row">
                     <div class="col-xs-4">
-                        <img ng-src="thumbs/anggota/{{match.model.id}}.jpg" width="50">
+                        <img ng-src="http://wikidpr.org/uploads/anggota/{{match.model.photo.file}}" width="50">
                     </div>
                     <div class="col-xs-8">
                         <strong>
               <div bind-html-unsafe="match.label | typeaheadHighlight:query"></div>
             </strong>
-                        <div bind-html-unsafe="match.model.district"></div>
-                        <div bind-html-unsafe="match.model.party"></div>
+                        <div>Komisi <span bind-html-unsafe="match.model.komisi"></span>
+                        </div>
+                        <div bind-html-unsafe="match.model.partai"></div>
                     </div>
                 </div>
             </a>
         </script>
 
-        <div class="row col-xs-12">
-            <input type="text" ng-model="anggotaSelected" placeholder="Pilih anggota" typeahead="member as member.name for member in anggota | filter:{name:$viewValue}"
-            typeahead-template-url="anggota-template.html" class="form-control"
-            width="8">
-        </div>
-        <div class="row col-xs-12">
-            <textarea style="height: 100px" class="form-control" ng-model="tweetText">{{tweetText}}</textarea>
-        </div>
+        <div ng-show="attr.userLoggedIn">
+            <div class="row col-xs-12">
+                <input type="text" ng-model="anggotaSelected" placeholder="Cari anggota" typeahead="anggota as anggota.nama for anggota in findAnggota($viewValue) | filter:{nama:$viewValue}"
+                typeahead-template-url="anggota-template.html" typeahead-min-length="2"
+                typeahead-on-select="onAnggotaSelected($item, $model, $label)"
+                class="form-control" width="8">
+            </div>
+            <div class="row col-xs-12">
+                <textarea style="height: 100px" class="form-control" ng-model="tweetText">{{tweetText}}</textarea>
+            </div>
 
-        <div class="row col-xs-12">
-            <button class="btn btn-default pull-right" type="submit" ng-model="tweetText">Tweet!</button>
+            <div class="row col-xs-12">
+                <div class="col-xs-8">
+                    <span ng-style="attr.tweetTextLimitStyle">Characters left: {{180 - tweetText.length}}</span>
+                </div>
+                <div class="col-xs-4">
+                    <button class="btn btn-default pull-right" ng-disabled="isTextLimitHit()" type="submit" ng-click="submitTweet(tweetText)">Tweet!</button>
+                </div>
+            </div>
+
+            <div class="row col-xs-12">
+              @{{attr.username}}'s latest tweets:
+              <ul class="list-group">
+                <li class="list-group-item" ng-repeat="tweet in attr.latestTweets">{{tweet.text}}</li>
+              </ul>
+            
+            </div>
         </div>
 
     </div>
