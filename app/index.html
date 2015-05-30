@@ -32,8 +32,8 @@
                         <a class="navbar-brand" href="#">
                               WikiDPR - Tweet
                             </a>
-                        <button ng-click="connectButton()" ng-hide="attr.userLoggedIn" class="btn btn-primary navbar-btn">Connect Twitter</button>
-                        <button ng-click="signOut()" ng-show="attr.userLoggedIn" class="btn btn-primary navbar-btn">Sign Out</button>
+                        <button ng-click="connectButton()" ng-hide="userInfo.loggedIn" class="btn btn-primary navbar-btn">Connect Twitter</button>
+                        <button ng-click="signOut()" ng-show="userInfo.loggedIn" class="btn btn-primary navbar-btn">Sign Out</button>
                     </div>
                 </div>
             </nav>
@@ -47,7 +47,7 @@
                     </div>
                     <div class="col-xs-8">
                         <strong>
-              <div bind-html-unsafe="match.label | typeaheadHighlight:query"></div>
+              <div bind-html-unsafe="match.label | typeaheadHighlight:query"><w/div>
             </strong>
                         <div>Komisi <span bind-html-unsafe="match.model.komisi"></span>
                         </div>
@@ -57,30 +57,30 @@
             </a>
         </script>
 
-        <div ng-show="attr.userLoggedIn">
+        <div ng-show="userInfo.loggedIn">
             <div class="row col-xs-12">
-                <input type="text" ng-model="anggotaSelected" placeholder="Cari anggota" typeahead="anggota as anggota.nama for anggota in findAnggota($viewValue) | filter:{nama:$viewValue}"
+                <input type="text" ng-model="tweetInfo.anggota" placeholder="Cari anggota" typeahead="anggota as anggota.nama for anggota in findAnggota($viewValue) | filter:{nama:$viewValue}"
                 typeahead-template-url="anggota-template.html" typeahead-min-length="2"
                 typeahead-on-select="onAnggotaSelected($item, $model, $label)"
                 class="form-control" width="8">
             </div>
             <div class="row col-xs-12">
-                <textarea style="height: 100px" class="form-control" ng-model="tweetText">{{tweetText}}</textarea>
+                <textarea style="height: 100px" class="form-control" ng-model="tweetInfo.text">{{tweetInfo.text}}</textarea>
             </div>
 
             <div class="row col-xs-12">
                 <div class="col-xs-8">
-                    <span ng-style="attr.tweetTextLimitStyle">Characters left: {{180 - tweetText.length}}</span>
+                    <span ng-style="tweetInfo.textLimitStyle">Characters left: {{180 - tweetInfo.text.length}}</span>
                 </div>
                 <div class="col-xs-4">
-                    <button class="btn btn-default pull-right" ng-disabled="isTextLimitHit()" type="submit" ng-click="submitTweet(tweetText)">Tweet!</button>
+                    <button class="btn btn-default pull-right" ng-disabled="isTextLimitHit()" type="submit" ng-click="submitTweet(tweetInfo.text)">Tweet!</button>
                 </div>
             </div>
 
             <div class="row col-xs-12">
-              @{{attr.username}}'s latest tweets:
+              @{{userInfo.username}}'s latest tweets:
               <ul class="list-group">
-                <li class="list-group-item" ng-repeat="tweet in attr.latestTweets">{{tweet.text}}</li>
+                <li class="list-group-item" ng-repeat="tweet in userInfo.latestTweets">{{tweet.text}}</li>
               </ul>
             
             </div>

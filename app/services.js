@@ -22,6 +22,7 @@ angular.module('myApp')
             var deferred = $q.defer();
             OAuth.popup('twitter', {cache:true}).done(function(twitter) { //cache means to execute the callback if the tokens are already present
                 connected = true;
+                oauthHandle = twitter;
                 deferred.resolve();
             }).fail(function (error) {
                 console.log(error);

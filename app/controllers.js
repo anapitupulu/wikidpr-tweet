@@ -5,43 +5,59 @@ angular.module('myApp')
 
     twitterService.initialize();
 
-    $scope.tweetText = '';
-    $scope.attr = {
-        userLoggedIn: twitterService.isReady(),
+    $scope.userInfo =  {
+        loggedIn: false,
         username: "",
-        latestTweets: [],
-        tweetTextLimitStyle: ""
+        latestTweets: []
+    }
+
+    $scope.tweetInfo = {
+        anggota: "",
+        text: "",
+        textLimitStyle: ""
+    }
+
+    var refreshUserInfo = function() {
+
+        if (twitterService.isReady()) {
+            $scope.userInfo.loggedIn = true;
+            twitterService.getUserInfo().then(function (userInfo) {
+                $scope.userInfo.username = userInfo.screen_name;
+            });
+
+            twitterService.getUserLatestTweets().then(function (latestTweets) {
+                $scope.userInfo.latestTweets = latestTweets;
+            });
+        } else {
+            $scope.userInfo.loggedIn = false;
+            $scope.userInfo.username = "";
+            $scope.userInfo.latestTweets = [];
+        }
+    }
+
+    var resetTweetInfo = function() {
+        $scope.tweetInfo.anggota = "";
+        $scope.tweetInfo.text = "";
+        $scope.tweetInfo.textLimitStyle = "";
     };
 
-    var initializeLoggedIn = function() {
-        twitterService.getUserInfo().then(function (userInfo) {
-            $scope.attr.username = userInfo.screen_name;
-        });
-
-        twitterService.getUserLatestTweets().then(function (latestTweets) {
-            $scope.attr.latestTweets = latestTweets;
-        });
-    }
-
-    if ($scope.attr.userLoggedIn) {
-        initializeLoggedIn();
-    }
+    refreshUserInfo();
+    resetTweetInfo();
 
     //when the user clicks the connect twitter button, the popup authorization window opens
     $scope.connectButton = function() {
         twitterService.connectTwitter().then(function() {
             if (twitterService.isReady()) {
-                //if the authorization is successful, hide the connect button and display the tweets
-                $scope.attr.userLoggedIn = true;
-                initializeLoggedIn();
+                refreshUserInfo();
+                resetTweetInfo();
             }
         });
     };
 
     $scope.signOut = function() {
         twitterService.clearCache();
-        $scope.attr.userLoggedIn = false;
-        $scope.attr.username = "";
+        refreshUserInfo();
+        resetTweetInfo();
     };
 
     $scope.findAnggota = function(anggota) {
@@ -59,25 +75,24 @@ angular.module('myApp')
        var komisi = $item.komisi;
        var partai = $item.partai
 
-       $scope.tweetText = "@" + twitterId + " " + "#" + partai + " #Komisi" + komisi + " ";
+       $scope.tweetInfo.text = "@" + twitterId + " " + "#" + partai + " #Komisi" + komisi + " ";
     };
 
     $scope.submitTweet = function(tweetText) {
         twitterService.postTweet(tweetText).then(function() {
             twitterService.getUserLatestTweets().then(function (latestTweets) {
-                $scope.attr.latestTweets = latestTweets;
-                $scope.anggotaSelected = "";
-                $scope.tweetText = "";
+                refreshUserInfo();
+                resetTweetInfo();
             });
         });
     }
 
     $scope.isTextLimitHit = function() {
-        if ($scope.tweetText.length > 180) {
-            $scope.attr.tweetTextLimitStyle = { "color": "red" };
+        if ($scope.tweetInfo.text.length > 180) {
+            $scope.tweetInfo.tweetTextLimitStyle = { "color": "red" };
             return true;
         } else {
-            $scope.attr.tweetTextLimitStyle = "";
+            $scope.tweetInfo.tweetTextLimitStyle = "";
             return false;
         }
     }
