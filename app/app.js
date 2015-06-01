@@ -18,4 +18,5 @@ filter('extractTwitterId', function() {
         var twitterId = tokenizedTwitterUrl[tokenizedTwitterUrl.length-1];
         return "@" + twitterId;
     };
-});
+}).
+constant('maxTweetChars', 140);

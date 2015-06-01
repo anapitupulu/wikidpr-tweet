@@ -1,9 +1,11 @@
 //inject the twitterService into the controller
 angular.module('myApp')
 
-.controller('WikiDprTweetController', ['$scope', '$q', 'twitterService', '$http', function($scope, $q, twitterService, $http) {
+.controller('WikiDprTweetController', ['$scope', '$q', 'twitterService', '$http', 'maxTweetChars', function($scope, $q, twitterService, $http, maxTweetChars) {
 
     twitterService.initialize();
+
+    $scope.maxTweetChars = maxTweetChars;
 
     $scope.userInfo =  {
         loggedIn: false,
@@ -93,11 +95,11 @@ angular.module('myApp')
     }
 
     $scope.isTextLimitHit = function() {
-        if ($scope.tweetInfo.text.length > 180) {
-            $scope.tweetInfo.tweetTextLimitStyle = { "color": "red" };
+        if ($scope.tweetInfo.text.length > maxTweetChars) {
+            $scope.tweetInfo.textLimitStyle = { "color": "red" };
             return true;
         } else {
-            $scope.tweetInfo.tweetTextLimitStyle = "";
+            $scope.tweetInfo.textLimitStyle = "";
             return false;
         }
     }

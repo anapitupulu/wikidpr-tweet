@@ -71,7 +71,7 @@
 
             <div class="row col-xs-12">
                 <div class="col-xs-8">
-                    <span ng-style="tweetInfo.textLimitStyle">Characters left: {{180 - tweetInfo.text.length}}</span>
+                    <span ng-style="tweetInfo.textLimitStyle">Characters left: {{maxTweetChars - tweetInfo.text.length}}</span>
                 </div>
                 <div class="col-xs-4">
                     <button class="btn btn-default pull-right" ng-disabled="isTextLimitHit()" type="submit" ng-click="submitTweet(tweetInfo.text)">Tweet!</button>
