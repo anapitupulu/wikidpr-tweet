@@ -49,6 +49,7 @@
                         <strong>
               <div bind-html-unsafe="match.label | typeaheadHighlight:query"></div>
             </strong>
+              <span bind-html-unsafe="match.model.twitter | extractTwitterId"></span>
                         <div>Komisi <span bind-html-unsafe="match.model.komisi"></span>
                         </div>
                         <div bind-html-unsafe="match.model.partai"></div>
