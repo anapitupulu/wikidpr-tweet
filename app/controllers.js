@@ -72,10 +72,15 @@ angular.module('myApp')
     $scope.onAnggotaSelected = function($item, $model, $label) {
        var tokenizedTwitterUrl = $item.twitter.split("/");
        var twitterId = tokenizedTwitterUrl[tokenizedTwitterUrl.length-1];
+       if (twitterId.length === 0) {
+         twitterId = $item.nama;
+       } else {
+         twitterId = "@" + twitterId;
+       }
        var komisi = $item.komisi;
        var partai = $item.partai
 
-       $scope.tweetInfo.text = "@" + twitterId + " " + "#" + partai + " #Komisi" + komisi + " ";
+       $scope.tweetInfo.text = twitterId + " " + "#" + partai + " #Komisi" + komisi + " ";
     };
 
     $scope.submitTweet = function(tweetText) {
