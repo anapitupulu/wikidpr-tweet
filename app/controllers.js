@@ -81,9 +81,10 @@ angular.module('myApp')
        }
        var komisi = $item.komisi;
        var partai = $item.partai;
-       var dapil = $item.namaDapil;
+       var dapil = $item.dapil;
+       var twitterPartai = $item.twitterPartai;
 
-       $scope.tweetInfo.text = "@wikidpr " + "#Kom" + komisi + " " + twitterId + " " + "#" + partai + " #" + dapil + " ";
+       $scope.tweetInfo.text = "@wikidpr " + komisi + " " + twitterId + " @" + twitterPartai + " " + dapil + " ";
     };
 
     $scope.submitTweet = function(tweetText) {
