@@ -1,0 +1,35 @@
+<ion-view view-title="Post Tweet">
+    <ion-content class="padding">
+
+        <div class="list card">
+            <div class="item item-avatar">
+                <img ng-src="http://wikidpr.org/{{anggota.photo.folder}}/{{anggota.photo.file}}">
+                <h2>{{anggota.nama}}</h2>
+            </div>
+        </div>
+
+        <h3>Tweet:</h3>
+        <div class="list list-inset">
+            <label class="item item-input" for="">
+                <textarea style="height: 100px" class="form-control" ng-model="tweetInfo.text">{{tweetInfo.text}}</textarea>
+            </label>
+        </div>
+
+        <div class="row">
+            <div class="col col-25">
+                <a href="/#/tweet">
+                    <button class="button button-stable pull-right">Back</button>
+                </a>
+            </div>
+            <div class="col col-50 padding-top">
+                <span ng-style="tweetInfo.textLimitStyle">Characters left: {{maxTweetChars - tweetInfo.text.length}}</span>
+            </div>
+            <div class="col col-25">
+                <button class="button button-positive pull-right" ng-disabled="isTextLimitHit()">Tweet!</button>
+            </div>
+        </div>
+
+
+
+    </ion-content>
+</ion-view>

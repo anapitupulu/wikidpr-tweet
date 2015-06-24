@@ -1,0 +1,9 @@
+{
+  "name": "Sidemenu",
+  "app_id": "",
+  "proxies": [
+  {
+    "path": "/wikidprapi",
+    "proxyUrl": "http://wikidpr.org/api/v2/anggota"
+  }]
+}

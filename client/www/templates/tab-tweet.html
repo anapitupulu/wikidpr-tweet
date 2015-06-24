@@ -1,0 +1,36 @@
+<ion-view view-title="WikiDPR - Tweet">
+    <ion-content class="padding">
+        <button ng-click="connectButton()" ng-hide="userInfo.loggedIn" class="button button-full button-positive">Connect Twitter</button>
+
+        <div ng-show="userInfo.loggedIn">
+            <div class="list">
+                <label class="item item-input item-select">
+                    <div class="input-label">Komisi</div>
+                    <select ng-model="input.anggotaKomisi">
+                        <option ng-repeat="komisi in availableKomisi">{{komisi}}</option>
+                    </select>
+                </label>
+            </div>
+            <div class="list">
+                <label class="item item-input">
+                    <input type="text" ng-model="input.anggotaName" placeholder="Nama anggota">
+                </label>
+            </div>
+
+            <div class="list">
+                <a class="item item-avatar" href="#/tab/posttweet" ng-click="selectAnggota(anggota)" ng-repeat="anggota in anggotaList">
+                  <img ng-if="config.enablePicture" ng-src="http://wikidpr.org/{{anggota.photo.folder}}/{{anggota.photo.file}}"/>
+                    <h2>{{anggota.nama}} - 
+                      <span ng-show="anggota.twitter.length">@{{anggota.twitter}}</span>
+                      <span ng-hide="anggota.twitter.length" style="font-style: italic">twitter not found</span>
+                    </h2>
+                    <p>{{anggota.komisi}} {{anggota.dapil}} @{{anggota.twitterPartai}}</p>
+                </a>
+            </div>
+
+            <button ng-click="signOut()" "userInfo.loggedIn" class="button button-small button-assertive">Sign Out</button>
+
+        </div>
+
+    </ion-content>
+</ion-view>
