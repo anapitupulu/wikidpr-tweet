@@ -101,7 +101,7 @@ angular.module('starter.controllers', [])
     });
 
 }])
-.controller('PostTweetCtrl', ['$scope', 'twitterService', 'wikiDprService', 'maxTweetChars', function($scope, twitterService, wikiDprService, maxTweetChars) {
+.controller('PostTweetCtrl', ['$scope', '$ionicPopup', 'twitterService', 'wikiDprService', 'maxTweetChars', function($scope, $ionicPopup, twitterService, wikiDprService, maxTweetChars) {
 
     $scope.maxTweetChars = maxTweetChars;
 
@@ -122,10 +122,16 @@ angular.module('starter.controllers', [])
 
     $scope.submitTweet = function(tweetText) {
         twitterService.postTweet(tweetText).then(function() {
-            twitterService.getUserLatestTweets().then(function (latestTweets) {
-                refreshUserInfo();
-                resetTweetInfo();
+            $ionicPopup.alert({
+                title: 'Tweet successfully submitted',
+                template: tweetText
             });
+
+            // twitterService.getUserLatestTweets().then(function (latestTweets) {
+            //     refreshUserInfo();
+            //     resetTweetInfo();
+            //
+            // });
         });
     };
 
