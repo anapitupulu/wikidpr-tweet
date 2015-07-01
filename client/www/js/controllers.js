@@ -49,7 +49,6 @@ angular.module('starter.controllers', [])
     $scope.userInfo =  {
         loggedIn: false,
         username: "",
-        latestTweets: []
     }
 
     $scope.anggotaList = [];
@@ -62,17 +61,9 @@ angular.module('starter.controllers', [])
 
         if (twitterService.isReady()) {
             $scope.userInfo.loggedIn = true;
-            // twitterService.getUserInfo().then(function (userInfo) {
-            //     $scope.userInfo.username = userInfo.screen_name;
-            // });
-            //
-            // twitterService.getUserLatestTweets().then(function (latestTweets) {
-            //     $scope.userInfo.latestTweets = latestTweets;
-            // });
         } else {
             $scope.userInfo.loggedIn = false;
             $scope.userInfo.username = "";
-            $scope.userInfo.latestTweets = [];
         }
     }
 
@@ -96,29 +87,18 @@ angular.module('starter.controllers', [])
         wikiDprService.setAnggotaSelected(anggota);
     };
 
-    // $scope.$watch('input.anggotaName', function(newValue, oldValue) {
-    //     if (newValue.length > 3) {
-    //         wikiDprService.searchAnggota(newValue, $scope.input.anggotaKomisi).then(function(result) {
-    //             $scope.anggotaList = result;
-    //         });
-    //     }
-    // }, true);
-
     $scope.$watchGroup(['input.anggotaName', 'input.anggotaKomisi'], function(newVals, oldVals) {
         var anggotaName = newVals[0];
         var anggotaKomisi = newVals[1];
 
-        wikiDprService.searchAnggota(anggotaName, anggotaKomisi).then(function(result) {
-            $scope.anggotaList = result;
-        });
+        if (newVals[0] !== oldVals[0] || newVals[1] !== oldVals[1]) {
+            wikiDprService.searchAnggota(anggotaName, anggotaKomisi).then(function(result) {
+                $scope.anggotaList = result;
+            });
+        };
+
     
     });
-
-    // $scope.$watch('input.anggotaKomisi', function(newValue, oldValue) {
-    //     wikiDprService.searchAnggota(newValue, $scope.input.anggotaName).then(function(result) {
-    //         $scope.anggotaList = result;
-    //     });
-    // }, true);
 
 }])
 .controller('PostTweetCtrl', ['$scope', 'twitterService', 'wikiDprService', 'maxTweetChars', function($scope, twitterService, wikiDprService, maxTweetChars) {
@@ -160,39 +140,4 @@ angular.module('starter.controllers', [])
     };
 
 }])
-.controller('PlaylistsCtrl', function($scope, $auth) {
-  $scope.authenticated = false;
-
-  // Function to be called on ng-click in the template login buttons.
-  $scope.authenticate = function(provider) {
-    // Perform the actual login.
-    // Handles getting the code from provider and making a call to
-    // the servers to get the user token and data.
-    $auth
-      .authenticate(provider)
-      .then(function(data) {
-        $scope.authenticated = true;
-        console.log(data);
-      }, function(error) {
-        console.log(error);
-      })
-    ;
-  };
-
-  $scope.logout = function() {
-    $auth.logout();
-    $scope.authenticated = false;
-  }
-
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
-})
-
-.controller('PlaylistCtrl', function($scope, $stateParams) {
-});
+;

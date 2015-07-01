@@ -52,49 +52,7 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.services', 'starter.c
         }
     }
   })
-    .state('app', {
-      url: "/app",
-      abstract: true,
-      templateUrl: "templates/menu.html",
-      controller: 'AppCtrl'
-    })
-
-    .state('app.search', {
-      url: "/search",
-      views: {
-        'menuContent' :{
-          templateUrl: "templates/search.html"
-        }
-      }
-    })
-
-    .state('app.browse', {
-      url: "/browse",
-      views: {
-        'menuContent' :{
-          templateUrl: "templates/browse.html"
-        }
-      }
-    })
-    .state('app.playlists', {
-      url: "/playlists",
-      views: {
-        'menuContent' :{
-          templateUrl: "templates/playlists.html",
-          controller: 'PlaylistsCtrl'
-        }
-      }
-    })
-
-    .state('app.single', {
-      url: "/playlists/:playlistId",
-      views: {
-        'menuContent' :{
-          templateUrl: "templates/playlist.html",
-          controller: 'PlaylistCtrl'
-        }
-      }
-    });
+  ;
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/tweet');
 })
@@ -121,22 +79,11 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.services', 'starter.c
     commonConfig.redirectUri = 'http://localhost/';
   }
 
-  // Configure Facebook login.
-  $authProvider.facebook(angular.extend({}, commonConfig, {
-    clientId: '657854390977827',
-    url: 'http://satellizer.herokuapp.com/auth/facebook'
-  }));
-
-  // Configure Google login.
-  $authProvider.google(angular.extend({}, commonConfig, {
-      clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com',
-    url: 'http://satellizer.herokuapp.com/auth/facebook'
-  }));
-
   $authProvider.twitter(angular.extend({}, commonConfig, {
     url: 'http://milton.sleigner.com:3000/auth/twitter'
   }));
 })
 .constant('maxTweetChars', 140)
-.constant('WikiDprApi', 'http://wikidpr.org/api/v2/anggota')
+.constant('WikiDprApiUrl', 'http://wikidpr.org/api/v2/anggota')
+.constant('WikiDprServiceUrl', 'http://milton.sleigner.com:3000')
 ;

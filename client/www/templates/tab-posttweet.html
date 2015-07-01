@@ -25,8 +25,14 @@
                 <span ng-style="tweetInfo.textLimitStyle">Characters left: {{maxTweetChars - tweetInfo.text.length}}</span>
             </div>
             <div class="col col-25">
-                <button class="button button-positive pull-right" ng-disabled="isTextLimitHit()">Tweet!</button>
+                <button class="button button-positive pull-right" ng-click="submitTweet(tweetInfo.text)" ng-disabled="isTextLimitHit()">Tweet!</button>
             </div>
+        </div>
+
+        <!-- <div class="row" ng&#45;class="{ fade&#45;out: tweetSubmitted, hidden: !tweetSubmitted }"> -->
+        <!--   Tweet submitted! -->
+
+          
         </div>
 
 

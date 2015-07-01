@@ -35,39 +35,29 @@ app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
-access_token_cache = {}
-
-if (os.path.isfile("access_token.p")):
-    access_token_cache = pickle.load(open ("access_token.p", "rb"))
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(120))
     display_name = db.Column(db.String(120))
-    facebook = db.Column(db.String(120))
-    github = db.Column(db.String(120))
-    google = db.Column(db.String(120))
-    linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
+    oauth_token = db.Column(db.String(120))
+    oauth_token_secret = db.Column(db.String(120))
 
-    def __init__(self, email=None, password=None, display_name=None,
-                 facebook=None, github=None, google=None, linkedin=None,
-                 twitter=None):
+    def __init__(self, display_name,
+                 twitter, oauth_token, oauth_token_secret, email=None, password=None):
         if email:
             self.email = email.lower()
         if password:
             self.set_password(password)
         if display_name:
             self.display_name = display_name
-        if facebook:
-            self.facebook = facebook
-        if google:
-            self.google = google
-        if linkedin:
-            self.linkedin = linkedin
         if twitter:
             self.twitter = twitter
+        if oauth_token:
+            self.oauth_token = oauth_token
+        if oauth_token_secret:
+            self.oauth_token_secret = oauth_token_secret
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -77,19 +67,10 @@ class User(db.Model):
 
     def to_json(self):
         return dict(id=self.id, email=self.email, displayName=self.display_name,
-                    facebook=self.facebook, google=self.google,
-                    linkedin=self.linkedin, twitter=self.twitter)
+                    twitter=self.twitter, oauth_token=self.oauth_token, oauth_token_secret=self.oauth_token_secret)
 
 
 db.create_all()
-
-# class TwitterToken(db.Model):
-#     access_token = db.Column(db.String(120))
-#     access_token_secret = db.Column(db.String(120))
-#
-#     def __init__(self, access_token, access_token_secret):
-#         self.access_token = access_token
-#         self.access_token_secret = access_token_secret
 
 def escape(s):
     """Percent Encode the passed in string"""
@@ -109,17 +90,15 @@ def parse_token(req):
     token = req.headers.get('Authorization').split()[1]
     return jwt.decode(token, app.config['TOKEN_SECRET'])
 
-def sendTwitterRequest(oauth_token, url, url_parameters, is_get_request=True):
-    # oauth_token = request.args.get('oauth_token')
-    oauth_token_secret = access_token_cache[oauth_token]
+def sendTwitterRequest(user, url, url_parameters, is_get_request=True):
     consumer_key = app.config['TWITTER_CONSUMER_KEY']
     consumer_secret = app.config['TWITTER_CONSUMER_SECRET']
 
-    oauth_parameters = get_oauth_parameters(consumer_key, oauth_token)
+    oauth_parameters = get_oauth_parameters(consumer_key, user.oauth_token)
 
     oauth_parameters['oauth_signature'] = generate_signature(
             "get" if is_get_request else "post", url, url_parameters, oauth_parameters,
-            consumer_key, consumer_secret, oauth_token_secret,
+            consumer_key, consumer_secret, user.oauth_token_secret,
             None if is_get_request else url_parameters['status']
             )
 
@@ -131,9 +110,6 @@ def sendTwitterRequest(oauth_token, url, url_parameters, is_get_request=True):
         url += '?' + urllib.urlencode(url_parameters)
         r = requests.get(url, headers=headers)
     else:
-        print url
-        print headers
-        print urllib.urlencode(url_parameters)
         r = requests.post(url, headers=headers, data=url_parameters)
 
     return json.dumps(json.loads(r.text), sort_keys=False, indent=4)
@@ -217,7 +193,6 @@ def generate_signature(method, url, url_parameters, oauth_parameters,
         escape(str(url)) + '&' +
         escape(parameter_string)
     )
-    print "signature_base_string: " + signature_base_string
 
     #Get the signing key
     signing_key = create_signing_key(oauth_consumer_secret, oauth_token_secret)
@@ -311,16 +286,16 @@ def twitter():
                       verifier=request.args.get('oauth_verifier'))
         r = requests.post(access_token_url, auth=auth)
         profile = dict(parse_qsl(r.text))
-        access_token_cache[profile['oauth_token']] = profile['oauth_token_secret']
-
-        pickle.dump( access_token_cache, open( "access_token.p", "wb"))
 
         user = User.query.filter_by(twitter=profile['user_id']).first()
         if user:
             token = create_token(user)
             return jsonify(token=token)
+
         u = User(twitter=profile['user_id'],
-                 display_name=profile['screen_name'])
+                 display_name=profile['screen_name'],
+                 oauth_token=profile['oauth_token'],
+                 oauth_token_secret=profile['oauth_token_secret'])
         db.session.add(u)
         db.session.commit()
         token = create_token(u)
@@ -335,28 +310,31 @@ def twitter():
         return redirect(authenticate_url + '?' + qs)
 
 @app.route('/api/twitter/account/verify_credentials', methods=['GET'])
+@login_required
 def verify_credentials():
     url = 'https://api.twitter.com/1.1/account/verify_credentials.json'
     url_parameters = {}
+    user = User.query.filter_by(id=g.user_id).first()
 
-    if request.args.get('oauth_token'):
-        return sendTwitterRequest(request.args.get('oauth_token'), url, url_parameters)
+    return sendTwitterRequest(user, url, url_parameters)
 
 @app.route('/api/twitter/statuses/user_timeline', methods=['GET'])
+@login_required
 def user_timeline():
     url = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
     url_parameters = { "count": "3" }
+    user = User.query.filter_by(id=g.user_id).first()
 
-    if request.args.get('oauth_token'):
-        return sendTwitterRequest(request.args.get('oauth_token'), url, url_parameters)
+    return sendTwitterRequest(user, url, url_parameters)
 
 @app.route('/api/twitter/statuses/update', methods=['POST'])
+@login_required
 def update():
     url = 'https://api.twitter.com/1.1/statuses/update.json'
-    url_parameters = { "status": request.form.get('status') }
+    url_parameters = { "status": request.json['status'] }
 
-    if request.args.get('oauth_token'):
-        return sendTwitterRequest(request.args.get('oauth_token'), url, url_parameters, False)
+    user = User.query.filter_by(id=g.user_id).first()
+    return sendTwitterRequest(user, url, url_parameters, False)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)

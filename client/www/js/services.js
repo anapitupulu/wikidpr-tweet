@@ -64,7 +64,7 @@ angular.module('starter.services', [])
         }
     }
 })
-.factory('twitterService', ['$auth', '$q', function($auth, $q) {
+.factory('twitterService', ['$auth', '$http', '$q', '$window', 'WikiDprServiceUrl', function($auth, $http, $q, $window, WikiDprServiceUrl) {
     var token = "";
     var connected = false;
 
@@ -83,7 +83,7 @@ angular.module('starter.services', [])
         connectTwitter: function() {
             var deferred = $q.defer();
             $auth.authenticate('twitter').then(function(data) {
-                token = $auth.getToken();
+                token = data;
                 deferred.resolve();
             });
             return deferred.promise;
@@ -92,10 +92,31 @@ angular.module('starter.services', [])
         clearCache: function() {
             $auth.logout();
             token = "";
+        },
+
+        postTweet: function(tweetText) {
+            var tweetText = "@wikidpr test";
+            var deferred = $q.defer();
+            $http(
+                {
+                    method: "post",
+                    url: WikiDprServiceUrl + '/api/twitter/statuses/update',
+                    data: {
+                        status: tweetText
+                    }, 
+                    headers: {
+                        'Authorization': $auth.getToken()
+                    }
+                }
+            ).success(function (data) {
+                deferred.resolve();
+            });
+
+            return deferred.promise;
         }
     };
 }]) 
-.factory('wikiDprService', function($http, $q, WikiDprApi) {
+.factory('wikiDprService', function($http, $q, WikiDprApiUrl) {
     var result = [];
     // var searchUrl = "http://wikidpr.org/api/v2/anggota";
     var searchUrl = "/wikidprapi";
