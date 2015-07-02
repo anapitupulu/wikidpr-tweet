@@ -85,12 +85,11 @@ def create_token(user):
     token = jwt.encode(payload, app.config['TOKEN_SECRET'])
     return token.decode('unicode_escape')
 
-
 def parse_token(req):
     token = req.headers.get('Authorization').split()[1]
     return jwt.decode(token, app.config['TOKEN_SECRET'])
 
-def sendTwitterRequest(user, url, url_parameters, is_get_request=True):
+def send_twitter_request(user, url, url_parameters, is_get_request=True):
     consumer_key = app.config['TWITTER_CONSUMER_KEY']
     consumer_secret = app.config['TWITTER_CONSUMER_SECRET']
 
@@ -99,8 +98,7 @@ def sendTwitterRequest(user, url, url_parameters, is_get_request=True):
     oauth_parameters['oauth_signature'] = generate_signature(
             "get" if is_get_request else "post", url, url_parameters, oauth_parameters,
             consumer_key, consumer_secret, user.oauth_token_secret,
-            None if is_get_request else url_parameters['status']
-            )
+            None if is_get_request else url_parameters['status'])
 
     headers = { 'Authorization': create_auth_header(oauth_parameters)}
 
@@ -113,7 +111,6 @@ def sendTwitterRequest(user, url, url_parameters, is_get_request=True):
         r = requests.post(url, headers=headers, data=url_parameters)
 
     return json.dumps(json.loads(r.text), sort_keys=False, indent=4)
-
 
 def login_required(f):
     @wraps(f)
@@ -134,6 +131,8 @@ def login_required(f):
             response.status_code = 401
             return response
 
+        # g is not global object but rather in the context of the request so
+        # it should be thread-safe
         g.user_id = payload['sub']
 
         return f(*args, **kwargs)
@@ -246,14 +245,6 @@ def create_auth_header(parameters):
 def index():
     return send_file('../../client/index.html')
 
-
-@app.route('/api/me')
-@login_required
-def me():
-    user = User.query.filter_by(id=g.user_id).first()
-    return jsonify(user.to_json())
-
-
 @app.route('/auth/login', methods=['POST'])
 def login():
     user = User.query.filter_by(email=request.json['email']).first()
@@ -316,7 +307,7 @@ def verify_credentials():
     url_parameters = {}
     user = User.query.filter_by(id=g.user_id).first()
 
-    return sendTwitterRequest(user, url, url_parameters)
+    return send_twitter_request(user, url, url_parameters)
 
 @app.route('/api/twitter/statuses/user_timeline', methods=['GET'])
 @login_required
@@ -325,7 +316,7 @@ def user_timeline():
     url_parameters = { "count": "3" }
     user = User.query.filter_by(id=g.user_id).first()
 
-    return sendTwitterRequest(user, url, url_parameters)
+    return send_twitter_request(user, url, url_parameters)
 
 @app.route('/api/twitter/statuses/update', methods=['POST'])
 @login_required
@@ -334,7 +325,7 @@ def update():
     url_parameters = { "status": request.json['status'] }
 
     user = User.query.filter_by(id=g.user_id).first()
-    return sendTwitterRequest(user, url, url_parameters, False)
+    return send_twitter_request(user, url, url_parameters, False)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)
