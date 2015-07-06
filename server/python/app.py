@@ -327,5 +327,12 @@ def update():
     user = User.query.filter_by(id=g.user_id).first()
     return send_twitter_request(user, url, url_parameters, False)
 
+@app.route('/api/wikidpr/anggota', methods=['GET'])
+@login_required
+def wikidpr():
+    # return redirect('http://wikidpr.org/api/v2/anggota');
+    r = requests.get('http://wikidpr.org/api/v2/anggota', params=request.args);
+    return json.dumps(json.loads(r.text))
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)

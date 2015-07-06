@@ -1,39 +1,39 @@
 angular.module('starter.controllers', [])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-  // Form data for the login modal
-  $scope.loginData = {};
+    // Form data for the login modal
+    $scope.loginData = {};
 
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
+    // Create the login modal that we will use later
+    $ionicModal.fromTemplateUrl('templates/login.html', {
+        scope: $scope
+    }).then(function(modal) {
+        $scope.modal = modal;
+    });
 
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
+    // Triggered in the login modal to close it
+    $scope.closeLogin = function() {
+        $scope.modal.hide();
+    };
 
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
+    // Open the login modal
+    $scope.login = function() {
+        $scope.modal.show();
+    };
 
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
+    // Perform the login action when the user submits the login form
+    $scope.doLogin = function() {
+        console.log('Doing login', $scope.loginData);
 
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
+        // Simulate a login delay. Remove this and replace with your login
+        // code if using a login system
+        $timeout(function() {
+            $scope.closeLogin();
+        }, 1000);
+    };
 })
 
-.controller('TweetCtrl', ['$scope', '$q', 'twitterService', 'wikiDprService', '$http', '$auth', 'maxTweetChars', function($scope, $q, twitterService, wikiDprService, $http, $auth, maxTweetChars) {
+.controller('TweetCtrl', ['$scope', '$q', '$ionicPopup', 'twitterService', 'wikiDprService', '$http', '$auth', 'maxTweetChars', function($scope, $q, $ionicPopup, twitterService, wikiDprService, $http, $auth, maxTweetChars) {
 
     twitterService.initialize();
 
@@ -92,12 +92,17 @@ angular.module('starter.controllers', [])
         var anggotaKomisi = newVals[1];
 
         if (newVals[0] !== oldVals[0] || newVals[1] !== oldVals[1]) {
-            wikiDprService.searchAnggota(anggotaName, anggotaKomisi).then(function(result) {
-                $scope.anggotaList = result;
-            });
+            wikiDprService.searchAnggota(anggotaName, anggotaKomisi).then(
+                function(result) {
+                    $scope.anggotaList = result;
+                },
+                function(reason) {
+                    $ionicPopup.alert({
+                        title: 'Internal application error'
+                    })
+                }
+            );
         };
-
-    
     });
 
 }])

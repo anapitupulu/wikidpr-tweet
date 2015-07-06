@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.factory('twitterService', ['$auth', '$http', '$q', '$window', 'WikiDprServiceUrl', function($auth, $http, $q, $window, WikiDprServiceUrl) {
+.factory('twitterService', ['$auth', '$http', '$q', 'WikiDprServiceUrl', function($auth, $http, $q, WikiDprServiceUrl) {
     var token = "";
     var connected = false;
 
@@ -51,10 +51,9 @@ angular.module('starter.services', [])
         }
     };
 }]) 
-.factory('wikiDprService', function($http, $q, WikiDprApiUrl) {
+.factory('wikiDprService', function($http, $q, WikiDprServiceUrl) {
     var result = [];
-    // var searchUrl = "http://wikidpr.org/api/v2/anggota";
-    var searchUrl = "/wikidprapi";
+    var searchUrl = WikiDprServiceUrl + "/api/wikidpr/anggota";
     var anggotaSelected = {};
 
     return {
@@ -66,7 +65,7 @@ angular.module('starter.services', [])
                 deferred.resolve(result);
             }).
                 error(function (data, status) {
-                console.error('Repos error', status, data);
+                deferred.reject();
             });
             return deferred.promise;
         },

@@ -84,6 +84,5 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.services', 'starter.c
   }));
 })
 .constant('maxTweetChars', 140)
-.constant('WikiDprApiUrl', 'http://wikidpr.org/api/v2/anggota')
 .constant('WikiDprServiceUrl', 'http://milton.sleigner.com:3000')
 ;
