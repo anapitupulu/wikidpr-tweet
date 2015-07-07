@@ -58,7 +58,7 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.services', 'starter.c
 })
 
 // Configure Satellizer.
-.config(function($authProvider) {
+.config(function($authProvider, WikiDprServiceUrl) {
 
   // Configuration common for all providers.
   var commonConfig = {
@@ -80,9 +80,8 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.services', 'starter.c
   }
 
   $authProvider.twitter(angular.extend({}, commonConfig, {
-    url: 'http://milton.sleigner.com:3000/auth/twitter'
+    url: WikiDprServiceUrl + '/auth/twitter'
   }));
 })
 .constant('maxTweetChars', 140)
-.constant('WikiDprServiceUrl', 'http://milton.sleigner.com:3000')
 ;
