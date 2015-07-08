@@ -18,10 +18,14 @@ angular.module('starter.services', [])
 
         connectTwitter: function() {
             var deferred = $q.defer();
-            $auth.authenticate('twitter').then(function(data) {
-                token = data;
-                deferred.resolve();
-            });
+            $auth.authenticate('twitter').then(
+                function(data) {
+                    token = data;
+                    deferred.resolve();
+                },
+                function() {
+                    deferred.reject();
+                });
             return deferred.promise;
         },
 
