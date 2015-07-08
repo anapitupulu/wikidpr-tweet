@@ -58,6 +58,7 @@ angular.module('starter.controllers', [])
     };
 
     $scope.searchingAnggota = false;
+    $scope.loggingInProcess = false;
 
     var refreshUserInfo = function() {
 
@@ -73,7 +74,9 @@ angular.module('starter.controllers', [])
 
     //when the user clicks the connect twitter button, the popup authorization window opens
     $scope.connectButton = function() {
+        $scope.loggingInProcess = true;
         twitterService.connectTwitter().then(function() {
+            $scope.loggingInProcess = false;
             if (twitterService.isReady()) {
                 refreshUserInfo();
             }

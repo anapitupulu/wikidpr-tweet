@@ -2,6 +2,10 @@
     <ion-content class="padding">
         <button ng-click="connectButton()" ng-hide="userInfo.loggedIn" class="button button-full button-positive">Connect Twitter</button>
 
+        <div ng-show=loggingInProcess>
+          <ion-spinner></ion-spinner> Attempting to log in...
+        </div>
+
         <div ng-show="userInfo.loggedIn">
             <div class="list">
                 <label class="item item-input item-select">
