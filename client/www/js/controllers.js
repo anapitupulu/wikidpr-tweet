@@ -57,6 +57,8 @@ angular.module('starter.controllers', [])
         anggotaKomisi: ""
     };
 
+    $scope.searchingAnggota = false;
+
     var refreshUserInfo = function() {
 
         if (twitterService.isReady()) {
@@ -92,11 +94,17 @@ angular.module('starter.controllers', [])
         var anggotaKomisi = newVals[1];
 
         if (newVals[0] !== oldVals[0] || newVals[1] !== oldVals[1]) {
-            wikiDprService.searchAnggota(anggotaName, anggotaKomisi).then(
+            var searchPromise = wikiDprService.searchAnggota(anggotaName, anggotaKomisi)
+
+            $scope.searchingAnggota = true;
+            
+            searchPromise.then(
                 function(result) {
                     $scope.anggotaList = result;
+                    $scope.searchingAnggota = false;
                 },
                 function(reason) {
+                    $scope.searchingAnggota = false;
                     $ionicPopup.alert({
                         title: 'Internal application error'
                     })

@@ -17,6 +17,10 @@
                 </label>
             </div>
 
+            <div ng-show="searchingAnggota">
+              <ion-spinner></ion-spinner> Searching anggota...
+            </div>
+
             <div class="list">
                 <a class="item item-avatar" href="#/tab/posttweet" ng-click="selectAnggota(anggota)" ng-repeat="anggota in anggotaList">
                   <img ng-if="config.enablePicture" ng-src="http://wikidpr.org/{{anggota.photo.folder}}/{{anggota.photo.file}}"/>
